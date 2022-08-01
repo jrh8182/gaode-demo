@@ -1,7 +1,9 @@
 <template>
   <div id="search_container">
-    <input type="text" placeholder="请输入查找关键词" v-model="inputObject.userInput" :id="inputObject.inputId">
-    <button id="searchBtn"  @click="send">搜索</button>
+    <el-input  v-model="inputObject.userInput" :id="inputObject.search_id" placeholder="请输入查找关键词" type="text"></el-input>
+    <!--    <input type="text"  v-model="inputObject.userInput" :id="inputObject.inputId">-->
+<!--    <button id="searchBtn"  @click="send">搜索</button>-->
+    <el-button  id="searchBtn" type="primary" @click="sendMsg" native-type="submit" size="medium" icon="el-icon-search"></el-button>
   </div>
 </template>
 
@@ -14,19 +16,24 @@ export default {
       inputObject:{
         userInput: '',
         //通过id绑定auto的关系
-        inputId:'searchInput'
+        search_id:'searchInput'
       },
     }
   },
   methods:{
-    send(){
-      bus.$emit('shareUserInput',this.inputObject)
+    sendMsg(){
+      bus.$emit('shareUserInput',this.inputObject.userInput)
+      console.log('搜索了'+ this.inputObject.userInput)
+    },
+    //用于绑定输入框 输入联想
+    sendId(){
+      bus.$emit('shareInputId',this.inputObject.search_id)
       console.log(this.inputObject)
     }
   },
   mounted() {
     //向Map 输入提示功能的input的DOM ID
-    this.send()
+    this.sendId()
   }
 }
 </script>
@@ -44,10 +51,7 @@ export default {
       width: 300px;
     }
     #searchBtn{
-      background-color: #bfa;
-      height: 30px;
-      width: 100px;
-      border-radius: 5px;
+      //width: 90px;
     }
   }
 </style>

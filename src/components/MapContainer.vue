@@ -13,8 +13,12 @@ window._AMapSecurityConfig = {
 export default {
   name: "MapContainer",
   created(){
-    bus.$on('shareUserInput',val => {
-      this.autoOptions.input = val.inputId
+    bus.$on('shareInputId',val => {
+      this.autoOptions.input = val
+    //  val是bus传来的值
+    }),
+    bus.$on('shareUserInput',val=>{
+      this.searchPlaceInput = val
     })
   },
   data(){
@@ -25,9 +29,18 @@ export default {
         input: ''
       },
       auto: null,
+      placeSearch: null,
+      //搜素关键词
+      searchPlaceInput: '',
     }
   },
-
+  watch:{
+    searchPlaceInput(newVal){
+      if(newVal!=null){
+        this.placeSearch.search(newVal)
+      }
+    }
+  },
   methods:{
     //地图初始化函数 initMap
     initMap(){
@@ -44,16 +57,31 @@ export default {
         this.map.addControl(new AMap.Scale())
         this.map.addControl(new AMap.ToolBar())
         this.map.addControl(new AMap.MapType())
+        //绑定搜索建议
         this.auto = new AMap.AutoComplete(this.autoOptions)
+        //poi搜索处理逻辑
+        this.placeSearch = new AMap.PlaceSearch({
+          map: this.map
+        }) //构造地点查询类
+        this.auto.on('select', this.select) //auto绑定事件   使用auto.on的select进行侦听，发现有select事件调用select函数
+
       }).catch(e=>{
         console.log(e);
       })
     },
+    //搜索poi---select 函数
+    select(e){
+      // console.log(e)
+      this.placeSearch.setCity(e.poi.adcode) //搜索的城市的id
+      this.placeSearch.search(e.poi.name) //关键字查询
+      this.map.setZoom(10,true)
+    }
   },
   mounted(){
     //DOM初始化完成进行地图初始化
     this.initMap();
   },
+
 
 }
 </script>
