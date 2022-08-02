@@ -11,31 +11,38 @@
 import bus from '@/bus/bus'
 export default {
   name: "search",
-  data(){
-    return{
-      inputObject:{
+  data() {
+    return {
+      inputObject: {
         userInput: '',
         //通过id绑定auto的关系
-        search_id:'searchInput'
+        search_id: 'searchInput'
       },
     }
   },
-  methods:{
-    sendMsg(){
-      bus.$emit('shareUserInput',this.inputObject.userInput)
-      console.log('搜索了'+ this.inputObject.userInput)
+  created() {
+    bus.$on('selectInput', val => {
+      // console.log(val)
+      this.inputObject.userInput = val
+    })
+  },
+  methods: {
+    sendMsg() {
+      bus.$emit('shareUserInput', this.inputObject.userInput)
+      console.log('搜索了' + this.inputObject.userInput)
     },
     //用于绑定输入框 输入联想
-    sendId(){
-      bus.$emit('shareInputId',this.inputObject.search_id)
-      console.log(this.inputObject)
+    sendId() {
+      bus.$emit('shareInputId', this.inputObject.search_id)
+      // console.log(this.inputObject)
     }
   },
   mounted() {
     //向Map 输入提示功能的input的DOM ID
-    this.sendId()
+    this.sendId();
   }
 }
+
 </script>
 
 <style lang="less"  scoped>
